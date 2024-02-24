@@ -6,23 +6,23 @@
   <title>Document</title>
 </head>
 <body>
-  <canvas id='C' width='670' height='180'></canvas>
+  <canvas id='C' width='500' height='180'></canvas>
 
 <div id='formular'">
   <form id="inner" class="flex">
-    <div>
-      <label for="spieltage">Restliche Spieltage (1-34):</label>
-      <input type="number" id="spieltage" name="spieltage" min="1" max="34" value=11 placeholder="11">
+    <div class="flex eng">
+      <label for="spieltage" class="flex3">Restliche Spieltage (1-34):</label>
+      <input type="number" id="spieltage" class="flex1" name="spieltage" min="1" max="34" value=12 placeholder="12">
     </div>
-    <div>
-      <label for="vorsprung">Leverkusens Vorsprung:</label>
-      <input type="number" id="vorsprung" name="vosprung" min="0" max="50" value=8 placeholder="8">
+    <div class="flex eng">
+      <label for="vorsprung" class="flex3">Leverkusens Vorsprung:</label>
+      <input type="number" id="vorsprung" class="flex1" name="vosprung" min="0" max="50" value=8 placeholder="8">
     </div>
     <div class="flex row probs">
-      <p class="flex3 startChancen">durchschnittliche Chancen (in %)<p>
-      <p class="flex1">1:0</p>
-      <p class="flex1">1/2</p>
-      <p class="flex1">0:1</p>
+      <p class="flex3 startChancen">Chancen pro Spiel (in %)<p>
+      <p class="flex1">Sieg</p>
+      <p class="flex1">Remis</p>
+      <p class="flex1">Niederlage</p>
     </div>
     <div class="flex row probs">
       <p class="flex3">für Leverkusen<p>
@@ -62,13 +62,13 @@
   }
 
   input {
-    width: 50px;
+    max-width: 40px;
   }
 
   #formular {
     background: #FF8C00;
-    width: 570px;
-    font-size: 18px;
+    width: 400px;
+    font-size: 16px;
     padding: 20px 50px;
   }
 
@@ -101,6 +101,10 @@
 
  .flex1 {
     flex: 1;
+ }
+
+ .eng {
+    width: 250px;
  }
 
 </style>
@@ -146,14 +150,14 @@ function berechne(a = vorsprung, b = 0) {
 }
 
 function nenneErgebnis() {
-  ctx.clearRect(0, 0, 670, 180)
-  write('Wahrscheinlichkeiten für folgende Resultate:', 50, 30, 30,)
-  write(`Meister wird ${nameA}:`, 50 ,  80, 24)
-  write(`Meister wird ${nameB}:`, 50 , 120, 24)
-  write(`Beide punktgleich:`    , 50 , 160, 24)
+  ctx.clearRect(0, 0, 550, 180)
+  write('Wahrscheinlichkeiten für folgende Resultate:', 50, 30, 20)
+  write(`Meister wird ${nameA}:`, 50 ,  80, 16)
+  write(`Meister wird ${nameB}:`, 50 , 120, 16)
+  write(`Beide punktgleich:`    , 50 , 160, 16)
 
   for (let i = 0; i < 3; i++)
-    write(runde(ende[i]), 450, i*40 + 80, 24, 'black', 'right')
+    write(runde(ende[i]), 430, i*40 + 80, 20, 'black', 'right')
 }
 
 function checkInput() {
