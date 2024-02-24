@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id='C' width='670' height='180'></canvas>
+
+<div id='formular'">
+  <form id="inner" class="flex">
+    <div>
+      <label for="spieltage">Restliche Spieltage (1-34):</label>
+      <input type="number" id="spieltage" name="spieltage" min="1" max="34" value=12 placeholder="12">
+    </div>
+    <div>
+      <label for="vorsprung">Leverkusens Vorsprung:</label>
+      <input type="number" id="vorsprung" name="vosprung" min="0" max="50" value=8 placeholder="8">
+    </div>
+    <div class="flex row probs">
+      <p class="flex3 startChancen">durchschliche Chancen (in %)<p>
+      <p class="flex1">1:0</p>
+      <p class="flex1">1/2</p>
+      <p class="flex1">0:1</p>
+    </div>
+    <div class="flex row probs">
+      <p class="flex3">für Leverkusen<p>
+      <p class="flex1">
+        <input type="number" id="siegLev" name="siegLev" min="0" max="100" value=60 placeholder="60">
+      </p>
+      <p class="flex1">
+        <input type="number" id="remisLev" name="remisLev" min="0" max="100" value=20 placeholder="20">
+      </p>
+      <p class="flex1">
+         <input type="number" id="niederLev" name="neiderLev" min="0" max="100" value=20 placeholder="20">
+      </p>
+    </div>
+    <div class="flex row probs">
+      <p class="flex3">für München<p>
+      <p class="flex1">
+        <input type="number" id="siegBay" name="siegBay" min="0" max="100" value=60 placeholder="60">
+      </p>
+      <p class="flex1">
+        <input type="number" id="remisBay" name="remisBay" min="0" max="100" value=20 placeholder="20">
+      </p>
+      <p class="flex1">
+         <input type="number" id="niederBay" name="niederBay" min="0" max="100" value=20 placeholder="20">
+      </p>
+    </div>
+  </form>
+  <div id="button">
+    <button id="submit" onclick="clicked()">Berechne</button>
+    
+  </div>
+
+</div>
+
+<style>
+  canvas {
+    background: #CCC;
+  }
+
+  input {
+    width: 50px;
+  }
+
+  #formular {
+    background: #FF8C00;
+    width: 570px;
+    font-size: 18px;
+    padding: 20px 50px;
+  }
+
+  #inner {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .probs {
+    width: 100%;
+    justify-content: end;
+    margin: -17px 0px;
+  }
+
+  .zahlen {
+    padding: 0px 10px
+  }
+
+   .flex {
+    display: flex;
+  }
+
+  .row {
+    flex-direction: row;
+  }
+
+ .flex3 {
+    flex: 3;
+ }
+
+ .flex1 {
+    flex: 1;
+ }
+
+</style>
+<script>
+
+document.getElementById('inner').addEventListener('keydown', 
+  (e) => { if (e.which == '13') e.preventDefault()})
+  
+let ctx = document.getElementById('C').getContext('2d'),
+    runden = 200000
+
+function write(text, x, y, size = 20, col = 'black', align = 'left') {
+  ctx.textAlign = align
+  ctx.fillStyle = col
+  ctx.font = `${size}px Arial`
+  ctx.fillText(text, x, y)
+}
+
+function runde(wert) {
+  return `${Math.round(10000 * wert / runden) / 100} %`
+}
+
+function init() {
+  ende      = [0, 0, 0]
+  punkte    = [0, 0]
+  nameA     = 'Leverkusen'
+  nameB     = 'München'
+
+}
+
+function berechne(a = vorsprung, b = 0) {
+  for (let j = 0; j < spieltage; j++) {
+    let randA = Math.random() * 100
+    let randB = Math.random() * 100
+    a += randA < chancenA[0] ? 3 : randA < chancenA[0] + chancenA[1] ? 1 : 0
+    b += randB < chancenB[0] ? 3 : randB < chancenB[0] + chancenB[1] ? 1 : 0
+  } 
+  if (a > b) 
+    ende[0]++
+  else if (a < b) 
+     ende[1]++
+  else ende[2]++
+}
+
+function nenneErgebnis() {
+  ctx.clearRect(0, 0, 670, 180)
+  write('Wahrscheinlichkeiten für folgende Resultate:', 50, 30, 30,)
+  write(`Meister wird ${nameA}:`, 50 ,  80, 24)
+  write(`Meister wird ${nameB}:`, 50 , 120, 24)
+  write(`Beide punktgleich:`    , 50 , 160, 24)
+
+  for (let i = 0; i < 3; i++)
+    write(runde(ende[i]), 450, i*40 + 80, 24, 'black', 'right')
+}
+
+function checkInput() {
+  if (spieltage < 1 || spieltage > 34) {
+    document.getElementById('spieltage').value = 12
+    spieltage = 12
+  }
+  if (vorsprung < 0 || vorsprung > 34) {
+    vorsprung = 8
+    document.getElementById('vorsprung').value = 8
+   }
+  
+  let copy = []
+  for (let l of list) copy.push(l.value * 1)
+  for (let i = 0; i < list.length; i++) 
+    if (list[i].value * 1 < 0 || list[i].value * 1 > 100)
+      list[i].value = `${copy[i].value * 1}`
+  for (let i = 0; i < list.length; i+=3) 
+    if (list[i].value * 1 + list[i+1].value * 1 + list[i+2].value * 1!= 100) {
+      list[i].value   = copy[i].value 
+      list[i+1].value = copy[i+2].value 
+      list[i+2].value = copy[i+2].value 
+    }
+  chancenA = [siegLev.value*1, remisLev.value*1, niederLev.value*1]
+  chancenB = [siegBay.value*1, remisBay.value*1, niederBay.value*1]
+}
+
+function clicked() {
+  spieltage = document.getElementById('spieltage').value * 1
+  vorsprung = document.getElementById('vorsprung').value * 1
+  siegLev   = document.getElementById('siegLev')
+  remisLev  = document.getElementById('remisLev')
+  niederLev = document.getElementById('niederLev')
+  siegBay   = document.getElementById('siegBay')
+  remisBay  = document.getElementById('remisBay')
+  niederBay = document.getElementById('niederBay')
+  list      = [siegLev, remisLev, niederLev, siegBay,remisBay, niederBay]
+
+  checkInput()
+
+  init()
+  for (let i = 0; i < runden; i++) 
+    berechne()
+ 
+  nenneErgebnis() 
+}
+
+clicked()
+
+</script>
+</body>
+</html>
+
